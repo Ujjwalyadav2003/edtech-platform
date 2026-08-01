@@ -79,7 +79,7 @@ exports.signup = async (req, res) => {
       otp,
     } = req.body;
 
-    if (!firstName || !lastName || !email || !password || !confirmPassword || !otp) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
       return res.status(403).json({
         success: false,
         message: "All fields are required",
@@ -155,8 +155,11 @@ exports.signup = async (req, res) => {
 
 
 // ================= LOGIN =================
+
+
 exports.login = async (req, res) => {
   try {
+
     const { email, password } = req.body;
 
     // validation

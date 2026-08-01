@@ -5,6 +5,12 @@ import HighlightText from "../components/core/HomePage/HighlightText";
 import CTAButton from "../components/core/HomePage/Button";
 import Banner from "../assets/Images/banner.mp4";
 import CodeBlocks from "../components/core/HomePage/CodeBlocks";
+import { FaArrowRight } from "react-icons/fa";
+import TimelineSection from '../components/core/HomePage/TimelineSection';
+import LearningLanguageSection from '../components/core/HomePage/LearningLanguageSection';
+import InstructorSection from '../components/core/HomePage/InstructorSection'
+import Footer from "../components/common/Footer";
+import ExploreMore from "../components/core/HomePage/ExploreMore"
 
 const Home = () => {
     return (
@@ -142,13 +148,81 @@ const Home = () => {
                         codeColor={"text-yellow-400"}
                     />
                 </div>
+            </div>
+
+            <ExploreMore />
+
+
+            {/* Section 2 */}
+            <div className='bg-white text-richblack-700'>
+                <div className="homepage_bg h-[300px]">
+
+                    <div className="w-11/12 max-w-maxContent flex flex-col items-center gap-5 mx-auto">
+                        <div className="h-[100px]"></div>
+                        <div className="flex flex-row gap-7 text-white">
+                            <CTAButton active={true} linkto={"/signup"}>
+                                <div className="flex items-center gap-3">
+                                    Explore Full Catalog
+                                    <FaArrowRight />
+                                </div>
+
+                            </CTAButton>
+                            <CTAButton active={false} linkto={"/signup"}>
+                                <div>
+                                    Learn More
+                                </div>
+                            </CTAButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-white w-full">
+                <div className="mx-auto w-11/12 max-w-maxContent flex flex-row items-start justify-between gap-20 px-16 py-35">
+                    {/* Left Side */}
+                    <div className="text-4xl text-black font-semibold w-50%">
+                        Get the Skills you Need For a
+                        <HighlightText text={"Job That Is In Demand"} />
+                    </div>
+
+                    {/* Right Side */}
+                    <div className="flex flex-col gap-10 w-[40%] items-start">
+                        <div className="text-[16px] text-black">
+                            The Modern StudyNotaion is the dictates its own terms. Today, to be a competitive specialist requires more than professional skills.
+                        </div>
+                        <CTAButton active={true} linkto={"/signup"}>
+                            <div>
+                                Learn More
+                            </div>
+                        </CTAButton>
+                    </div>
+
+                </div>
+
+                <TimelineSection />
+
+                <LearningLanguageSection />
 
 
             </div>
 
-            {/* Section 2 */}
+
+
             {/* Section 3 */}
+
+            <div className="w-11/12 mx-auto max-w-maxContent flex flex-col items-center justify-between gap-8 bg-richblack-900 text-white ">
+                <InstructorSection />
+
+                <h2 className="text-center text-4xl font-semibold mt-10">
+                    Review From Other Learners
+                </h2>
+            </div>
+
+
             {/* Footer */}
+
+            <Footer />
+
         </div>
     );
 };
