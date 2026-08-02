@@ -116,7 +116,7 @@ exports.verifySignature = async (req, res) => {
                 courseEnrollmentEmail(
                     enrolledStudent.firstName,
                     enrolledCourse.courseName,
-                    "http://localhost:3000/dashboard"
+                    `${process.env.FRONTEND_URL || "http://localhost:3000"}/dashboard`
                 )
             );
 
