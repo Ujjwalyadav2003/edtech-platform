@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 import Logos from "../../assets/Images/slogo.webp";
@@ -6,9 +6,7 @@ import { NavbarLinks } from "../../data/navbar-links";
 import { useSelector } from "react-redux";
 import { CiShoppingCart } from "react-icons/ci";
 import ProfileDropDown from "../core/Auth/ProfileDropDown";
-import { useState } from "react";
-import { apiConnector } from "../../../src/services/apiconnector";
-import { categories } from "../../../src/services/apis";
+
 
 
 const subLinks = [
