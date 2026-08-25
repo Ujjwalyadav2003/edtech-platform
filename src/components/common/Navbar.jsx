@@ -56,10 +56,10 @@ const Navbar = () => {
 
     return (
         <nav className="flex h-12 items-center justify-center border-b border-richblack-700 bg-richblack-900">
-            <div className="flex w-11/12 max-w-maxContent items-center justify-between">
+            <div className="flex w-11/12 max-w-maxContent min-w-0 items-center justify-between gap-2">
 
                 {/* Logo */}
-                <Link to="/" className="flex items-center gap-2">
+                <Link to="/" className="flex shrink-0 items-center gap-2">
                     <img
                         src={Logos}
                         alt="StudyNotion Logo"
@@ -71,7 +71,7 @@ const Navbar = () => {
                 </Link>
 
                 {/* Navigation Links */}
-                <ul className="flex items-center gap-x-6 text-sm">
+                <ul className="flex min-w-0 flex-1 items-center justify-center gap-x-3 overflow-hidden text-sm sm:gap-x-6">
                     {NavbarLinks.map((link, index) => (
                         <li key={index}>
                             {link.title === "Catalog" ? (
@@ -121,7 +121,7 @@ const Navbar = () => {
                 </ul>
 
                 {/* Buttons */}
-                <div className=" flex items-center gap-x-4">
+                <div className="flex shrink-0 items-center gap-x-2 sm:gap-x-4">
                     {
                         user && user?.accountType !== "Instructor" && (
                             <Link to="/dashboard/cart" className="relative">
