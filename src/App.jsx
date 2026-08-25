@@ -15,7 +15,7 @@ import ContactUs from "./pages/ContactUs";
 import Settings from "./pages/Settings"
 import EnrolledCourses from "../src/components/core/Dashboard/EnrolledCourses"
 import Cart from "./components/core/Dashboard/Cart";
-import { ACCOUNT_TYPE } from "./utils/constants";
+// import { ACCOUNT_TYPE } from "./utils/constants";
 import Wishlist from "./pages/Wishlist";
 import DashboardPerformance from "./components/core/Dashboard/DashBoardPerformance";
 import InstructorDashboard from "./pages/InstructorDashboard"
