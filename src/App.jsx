@@ -19,7 +19,7 @@ import { ACCOUNT_TYPE } from "./utils/constants";
 import Wishlist from "./pages/Wishlist";
 import DashboardPerformance from "./components/core/Dashboard/DashBoardPerformance";
 import InstructorDashboard from "./pages/InstructorDashboard"
-// import MyWishlist from "./pages/Wishlist";
+import MyWishlist from "./pages/Wishlist";
 
 
 function App() {
