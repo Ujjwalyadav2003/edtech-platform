@@ -55,7 +55,7 @@ const Navbar = () => {
     // }
 
     return (
-        <nav className="flex h-12 items-center justify-center border-b border-richblack-700 bg-richblack-900">
+        <nav className="flex h-16 items-center justify-center border-b border-richblack-700 bg-richblack-900">
             <div className="flex w-11/12 max-w-maxContent min-w-0 items-center justify-between gap-2">
 
                 {/* Logo */}
@@ -65,13 +65,13 @@ const Navbar = () => {
                         alt="StudyNotion Logo"
                         className="h-8 w-8 object-contain"
                     />
-                    <h1 className="text-sm font-bold text-white">
+                    <h1 className="hidden sm:block text-sm font-bold text-white">
                         Study<span className="text-richblack-300">Notion</span>
                     </h1>
                 </Link>
 
                 {/* Navigation Links */}
-                <ul className="flex min-w-0 flex-1 items-center justify-center gap-x-3 overflow-hidden text-sm sm:gap-x-6">
+                <ul className="hidden md:flex min-w-0 flex-1 items-center justify-center gap-x-6 text-sm">
                     {NavbarLinks.map((link, index) => (
                         <li key={index}>
                             {link.title === "Catalog" ? (
@@ -139,7 +139,7 @@ const Navbar = () => {
                     {
                         token === null && (
                             <Link to="/login">
-                                <button className="rounded-md border border-richblack-700 bg-richblack-800 px-4 py-2 text-sm font-medium text-richblack-5 transition-all duration-200 hover:bg-richblack-700">
+                                <button className="rounded-md border border-richblack-700 bg-richblack-800 px-2 md:px-4 py-2 text-xs md:text-sm font-medium">
                                     Log In
                                 </button>
 

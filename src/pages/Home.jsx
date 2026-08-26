@@ -29,13 +29,13 @@ const Home = () => {
                 </Link>
 
                 {/* Heading */}
-                <div className="text-center text-4xl font-semibold mt-7">
+                <div className="text-center text-3xl md:text-4xl lg:text-5xl font-semibold mt-7">
                     Empower Your Future With{" "}
                     <HighlightText text={"Coding Skills"} />
                 </div>
 
                 {/* Subheading */}
-                <div className="mt-4 w-[90%] text-center text-base leading-relaxed text-richblack-300">
+                <div className="mt-4 w-[95%] md:w-[90%] text-center text-sm md:text-base leading-relaxed text-richblack-300">
                     With our online coding courses, you can learn at your own pace,
                     from anywhere in the world, and get access to a wealth of
                     resources, including hands-on projects, quizzes, and personalized
@@ -43,7 +43,7 @@ const Home = () => {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex gap-7 mt-8">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-7 mt-8">
                     <CTAButton active={true} linkto={"/signup"}>
                         Learn More
                     </CTAButton>
@@ -178,7 +178,7 @@ const Home = () => {
             </div>
 
             <div className="bg-white w-full">
-                <div className="mx-auto w-11/12 max-w-maxContent flex flex-row items-start justify-between gap-20 px-16 py-35">
+                <div className="mx-auto w-11/12 max-w-maxContent flex flex-col lg:flex-row items-start justify-between gap-10 lg:gap-20 px-4 lg:px-16 py-20">
                     {/* Left Side */}
                     <div className="text-4xl text-black font-semibold w-50%">
                         Get the Skills you Need For a
