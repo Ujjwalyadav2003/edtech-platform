@@ -5,6 +5,7 @@ const Profile = require("../models/Profile");
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const mailSender = require("../utils/mailSender");
 
 require("dotenv").config();
 
@@ -21,7 +22,13 @@ exports.sendOtp = async (req, res) => {
       });
     }
 
-    const userExists = await User.findOne({ email });
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Check if user already exists
+    const userExists = await User.findOne({
+      email: normalizedEmail,
+    });
+
     if (userExists) {
       return res.status(400).json({
         success: false,
@@ -29,12 +36,15 @@ exports.sendOtp = async (req, res) => {
       });
     }
 
+    // Generate 6-digit OTP
     let otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
       specialChars: false,
+      digits: true,
     });
 
+    // Ensure OTP is unique
     let existingOtp = await Otp.findOne({ otp });
 
     while (existingOtp) {
@@ -42,13 +52,50 @@ exports.sendOtp = async (req, res) => {
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
         specialChars: false,
+        digits: true,
       });
+
       existingOtp = await Otp.findOne({ otp });
     }
 
-    await Otp.create({ email, otp });
+    // Remove previous OTP for this email
+    await Otp.deleteMany({
+      email: normalizedEmail,
+    });
 
-    console.log("OTP 👉", otp);
+    // Save new OTP
+    await Otp.create({
+      email: normalizedEmail,
+      otp,
+    });
+
+    // Send OTP email using Brevo SMTP
+    const emailResponse = await mailSender(
+      normalizedEmail,
+      "StudyNotion - Email Verification OTP",
+      `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; color: #222;">
+          <h2>Verify Your Email</h2>
+          <p>Hi,</p>
+          <p>Use the following OTP to verify your email address for StudyNotion:</p>
+
+          <div style="background-color: #f4f4f4; padding: 18px; text-align: center; border-radius: 8px;">
+            <h1 style="letter-spacing: 8px; margin: 0;">${otp}</h1>
+          </div>
+
+          <p>Please do not share this code with anyone.</p>
+          <p>If you did not request this code, you can ignore this email.</p>
+
+          <p>Regards,<br/>StudyNotion Team</p>
+        </div>
+      `
+    );
+
+    if (!emailResponse) {
+      throw new Error("Email service did not confirm successful sending");
+    }
+
+    console.log("OTP email sent successfully");
 
     return res.status(200).json({
       success: true,
@@ -56,7 +103,8 @@ exports.sendOtp = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("SEND OTP ERROR 👉", error);
+    console.error("SEND OTP ERROR:", error.message);
+
     return res.status(500).json({
       success: false,
       message: "Error sending OTP",
@@ -79,12 +127,21 @@ exports.signup = async (req, res) => {
       otp,
     } = req.body;
 
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      return res.status(403).json({
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !otp
+    ) {
+      return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "All required fields must be provided",
       });
     }
+
+    const normalizedEmail = email.trim().toLowerCase();
 
     if (password !== confirmPassword) {
       return res.status(400).json({
@@ -93,7 +150,10 @@ exports.signup = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({
+      email: normalizedEmail,
+    });
+
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -101,51 +161,59 @@ exports.signup = async (req, res) => {
       });
     }
 
-    const recentOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+    // Verify the latest OTP for this email
+    const recentOtp = await Otp.findOne({
+      email: normalizedEmail,
+    }).sort({ createdAt: -1 });
 
-    if (!recentOtp || otp !== recentOtp.otp) {
+    if (!recentOtp || String(otp).trim() !== String(recentOtp.otp)) {
       return res.status(400).json({
         success: false,
         message: "Invalid OTP",
       });
     }
 
-    await Otp.deleteMany({ email });
+    // Delete OTP after successful verification
+    await Otp.deleteMany({
+      email: normalizedEmail,
+    });
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create profile
     const profileDetails = await Profile.create({
       gender: null,
       dateOfBirth: null,
       about: null,
-      contactNumber: null,
+      contactNumber: contactNumber || null,
     });
 
-    // 🔥 IMPORTANT FIX
+    // Create user
     const user = await User.create({
       firstName,
       lastName,
-      email,
+      email: normalizedEmail,
       contactNumber,
       password: hashedPassword,
-
-      // ✅ default Student, but allow Admin if passed
       accountType: accountType || "Student",
-
       additionalDetails: profileDetails._id,
-      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+        `${firstName} ${lastName}`
+      )}`,
     });
 
     user.password = undefined;
 
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
       message: "User registered successfully",
       user,
     });
 
   } catch (error) {
-    console.log("SIGNUP ERROR 👉", error);
+    console.error("SIGNUP ERROR:", error.message);
+
     return res.status(500).json({
       success: false,
       message: "Signup failed",
@@ -155,23 +223,23 @@ exports.signup = async (req, res) => {
 
 
 // ================= LOGIN =================
-
-
 exports.login = async (req, res) => {
   try {
-
     const { email, password } = req.body;
 
-    // validation
     if (!email || !password) {
-      return res.status(403).json({
+      return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "Email and password are required",
       });
     }
 
-    // find user
-    const user = await User.findOne({ email }).populate("additionalDetails");
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Find user
+    const user = await User.findOne({
+      email: normalizedEmail,
+    }).populate("additionalDetails");
 
     if (!user) {
       return res.status(401).json({
@@ -180,7 +248,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    // password match
+    // Verify password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -190,7 +258,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    // token
+    // Generate JWT
     const payload = {
       email: user.email,
       id: user._id,
@@ -216,7 +284,8 @@ exports.login = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("LOGIN ERROR 👉", error);
+    console.error("LOGIN ERROR:", error.message);
+
     return res.status(500).json({
       success: false,
       message: "Login failed",
@@ -231,6 +300,13 @@ exports.changePassword = async (req, res) => {
     const userId = req.user.id;
     const { oldPassword, newPassword } = req.body;
 
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Old password and new password are required",
+      });
+    }
+
     const user = await User.findById(userId);
 
     if (!user) {
@@ -240,6 +316,7 @@ exports.changePassword = async (req, res) => {
       });
     }
 
+    // Verify old password
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
     if (!isMatch) {
@@ -249,6 +326,7 @@ exports.changePassword = async (req, res) => {
       });
     }
 
+    // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     user.password = hashedPassword;
@@ -260,7 +338,8 @@ exports.changePassword = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("CHANGE PASSWORD ERROR 👉", error);
+    console.error("CHANGE PASSWORD ERROR:", error.message);
+
     return res.status(500).json({
       success: false,
       message: "Error updating password",

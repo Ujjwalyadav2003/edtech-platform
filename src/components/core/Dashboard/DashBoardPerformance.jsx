@@ -7,7 +7,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-const InstructorDashboard = () => {
+const DashboardPerformance = () => {
     const chartData = [
         {
             name: "My Course",
@@ -195,4 +195,4 @@ const InstructorDashboard = () => {
     );
 };
 
-export default InstructorDashboard;
+export default DashboardPerformance;

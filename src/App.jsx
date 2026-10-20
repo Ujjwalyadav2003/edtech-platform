@@ -13,16 +13,16 @@ import MyProfile from "./pages/MyProfile";
 import About from "./pages/About"
 import ContactUs from "./pages/ContactUs";
 import Settings from "./pages/Settings"
-import EnrolledCourses from "../src/components/core/Dashboard/EnrolledCourses"
+import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
 import Cart from "./components/core/Dashboard/Cart";
 // import { ACCOUNT_TYPE } from "./utils/constants";
 import Wishlist from "./pages/Wishlist";
 import DashboardPerformance from "./components/core/Dashboard/DashBoardPerformance";
-import InstructorDashboard from "./pages/InstructorDashboard"
-
+import InstructorDashboard from "./pages/InstructorDashboard";
 
 
 function App() {
+
   return (
     <div className="w-screen min-h-screen bg-richblack-900 flex flex-col font-inter text-white">
       <Navbar />

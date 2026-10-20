@@ -3,35 +3,30 @@ const nodemailer = require("nodemailer");
 const mailSender = async (email, title, body) => {
     try {
         const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false, // TLS
+            host: process.env.MAIL_HOST || "smtp-relay.brevo.com",
+            port: Number(process.env.MAIL_PORT) || 587,
+            secure: false,
             auth: {
                 user: process.env.MAIL_USER,
                 pass: process.env.MAIL_PASS,
             },
-
-            // 🔥 THIS IS THE FIX
-            tls: {
-                rejectUnauthorized: false,
-            },
         });
 
-        console.log("📧 Sending mail to:", email);
-
         const info = await transporter.sendMail({
-            from: `"UjjwalDev" <${process.env.MAIL_USER}>`,
+            from: {
+                name: "StudyNotion",
+                address: process.env.MAIL_USER,
+            },
             to: email,
             subject: title,
             html: body,
         });
 
-        console.log("✅ Email sent:", info.response);
+        console.log("Brevo email sent successfully:", info.messageId);
 
         return info;
-
     } catch (error) {
-        console.log("❌ Mail Error:", error.message);
+        console.error("Brevo email sending failed:", error.message);
         throw error;
     }
 };
