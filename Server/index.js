@@ -1,3 +1,4 @@
+
 const dotenv = require("dotenv");
 dotenv.config({ path: __dirname + "/.env" });
 
@@ -46,30 +47,57 @@ database.connect();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
-  ],
-  credentials: true
-}));
+// CORS configuration
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "https://edtech-platform-git-main-ujjwal-yadavs-projects-a3e651ac.vercel.app",
+      ];
 
-app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: "/tmp"
-}));
+      const isProjectVercelDomain =
+        origin &&
+        /^https:\/\/edtech-platform(?:-[a-z0-9-]+)?\.vercel\.app$/.test(
+          origin
+        );
+
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        isProjectVercelDomain
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp",
+  })
+);
 
 cloudinaryConnect();
 
+// API routes
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 
+// Server health check
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Server is running"
+    message: "Server is running",
   });
 });
 
